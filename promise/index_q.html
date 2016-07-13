@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>使用Q</h1>
+    <div id="demo1">只有一个then</div>
+    <div id="demo2">两个then</div>
+    <div id="demo3">then的回调中返回新的promise</div>
+    <div id="demo4">两个then有一个报错了</div>
+    <div id="demo5">空then方法</div>
+</body>
+<script src="./bower_components/q/q.js"></script>
+<script type="text/javascript">
+var waitOp = function() {
+    var defer = Q.defer();
+
+
+    setTimeout(function() {
+        defer.resolve();
+    }, 200);
+
+    return defer.promise;
+};
+// demo1
+waitOp().then(function() {
+    console.log("demo1 resolve");
+}, function() {
+    console.log("demo1 reject");
+});
+
+//demo2
+var templOp = waitOp();
+
+templOp.then(function() {
+    console.log("demo2-1 resolve");
+}, function() {
+    console.log("demo2-1 reject");
+});
+templOp.then(function() {
+    console.log("demo2-2 resolve");
+}, function() {
+    console.log("demo2-2 reject");
+});
+
+//demo3
+waitOp().then(function() {
+    console.log("demo3-1 resolve");
+    return waitOp();
+}, function() {
+    console.log("demo3-1 reject");
+}).then(function() {
+    console.log("demo3-2 resolve");
+}, function() {
+    console.log("demo3-2 reject");
+});
+
+//demo4
+waitOp().then(function() {
+    console.log("demo4-1 resolve");
+    throw new Error("error");
+}, function() {
+    console.log("demo4-1 reject");
+}).then(function() {
+    console.log("demo4-2 resolve");
+}, function() {
+    console.log("demo4-2 reject");
+});
+
+//demo5 
+function waitOpReject() {
+    var defer = new Q.defer();
+
+
+    setTimeout(function() {
+        defer.reject();
+    }, 200);
+
+    return defer.promise;
+}
+waitOpReject().then()
+    .then(function() {
+        console.log("demo5-2 resolve");
+    }, function() {
+        console.log("demo5-2 reject");
+    }).then(function() {
+        console.log("demo5-3 resolve");
+    }, function() {
+        console.log("demo5-3 reject");
+    });
+</script>
+
+</html>
